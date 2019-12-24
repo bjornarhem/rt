@@ -1325,6 +1325,20 @@ sub SetDefaultDueIn {
     );
 }
 
+sub HiddenCustomRoleIDsForURL {
+    my $self = shift;
+    my $url  = shift;
+
+    my $roles = $self->CustomRoles;
+    my @ids;
+
+    while (my $role = $roles->Next) {
+        push @ids, $role->Id if $role->IsHiddenForURL($url);
+    }
+
+    return @ids;
+}
+
 RT::Base->_ImportOverlays();
 
 1;
