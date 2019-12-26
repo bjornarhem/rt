@@ -128,3 +128,10 @@ svg.icon-helper {
 .oddline {
     background-color: rgba(0, 0, 0, 0.05);
 }
+
+/* styling correction for customrole visiblity */
+#comp-Admin-CustomRoles-Visibility .custom-control.custom-radio {
+    padding-left: 2em;
+    padding-right: 0.2em;
+    padding-top: 0.4em;
+}
