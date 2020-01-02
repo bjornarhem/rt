@@ -51,7 +51,7 @@
 <& /Widgets/TitleBoxStart, title => loc('Advanced search') &>
 % }
 <div class="form-row">
-<h2><&|/l&>Basics</&></h2>
+<span class="article-advanced-search-header"><&|/l&>Basics</&></span>
 </div>
 
 <div class="form-row">
@@ -100,7 +100,7 @@
 </div>
 
 <div class="form-row label">
-  <h2><&|/l&>Content</&></h2>
+  <span class="article-advanced-search-header"><&|/l&>Content</&></span>
 </div>
 
 <div class="form-row">
@@ -145,7 +145,7 @@
 % }
 
 <div class="form-row label">
-  <h2><&|/l&>Dates</&></h2>
+  <span class="article-advanced-search-header"><&|/l&>Dates</&></span>
 </div>
 
 <div class="form-row">
@@ -181,7 +181,7 @@
 </div>
 
 <div class="form-row label">
-  <h2><&|/l&>Links</&></h2>
+  <span class="article-advanced-search-header"><&|/l&>Links</&></span>
 </div>
 
 <div class="form-row">
@@ -209,7 +209,7 @@
 </div>
 
 <div class="form-row label">
-  <h2><&|/l&>Topics</&></h2>
+  <span class="article-advanced-search-header"><&|/l&>Topics</&></span>
 </div>
 
 

@@ -6,3 +6,8 @@
 #article-list span.article-update {
     font-weight: bold;
 }
+
+span.article-advanced-search-header {
+    font-size: 1.05em ;
+    font-weight: bold;
+}
