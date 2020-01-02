@@ -153,7 +153,7 @@ sub DoArticleSearch{
   my $search_text = shift;
 
   $m->follow_link_ok( {text => 'Articles'}, 'Articles Search');
-  $m->follow_link_ok( {text => 'in class '. $class_name}, 'Articles in class '. $class_name);
+  $m->follow_link_ok( {text => $class_name}, 'Articles in class '. $class_name);
   $m->text_contains('First article');
 
   $m->submit_form_ok( {
