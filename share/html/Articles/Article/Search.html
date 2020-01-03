@@ -45,7 +45,7 @@
 %# those contributions and any derivatives thereof.
 %#
 %# END BPS TAGGED BLOCK }}}
-<& /Elements/Header, Title => loc("Search for articles") &>
+<& /Elements/Header, Title => loc("Article search") &>
 <& /Elements/Tabs &>
 
 % unless ( keys %ARGS ) {
@@ -93,7 +93,6 @@
 </div>
 
 % if ($articles->BuildSelectCountQuery =~ /WHERE/i) {
-<h2><&|/l&>Search results</&></h2>
 <& /Elements/CollectionList,
     Collection => $articles, 
     AllowSorting => 1,
