@@ -11,3 +11,7 @@ span.article-advanced-search-header {
     font-size: 1.05em ;
     font-weight: bold;
 }
+#article-search th.collection-as-table
+ {
+    color: #3858a3;
+}

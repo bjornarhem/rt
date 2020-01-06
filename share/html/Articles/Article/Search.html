@@ -93,6 +93,7 @@
 </div>
 
 % if ($articles->BuildSelectCountQuery =~ /WHERE/i) {
+<div id="article-search">
 <& /Elements/CollectionList,
     Collection => $articles, 
     AllowSorting => 1,
@@ -102,7 +103,7 @@
     GenericQueryArgs => { %filtered, Format => $format, },
     &>
 % }
-
+</div>
 <br />
 <br />
 <br />
