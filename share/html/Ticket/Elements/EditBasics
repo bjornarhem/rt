@@ -153,6 +153,7 @@ unless ($ExcludeCustomRoles) {
                 role    => $role,
                 Ticket  => $TicketObj,
                 Default => $defaults{$role->GroupType},
+                ShowEntryHint => 0,
             }
         };
     }
