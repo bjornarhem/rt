@@ -62,6 +62,7 @@
   </div>
 </div>
 
+<div id="article-list">
 % while (my $Article = $MyArticles->Next) {
 % $i++;
 <div class="<% $i%2 ? 'oddline' : 'evenline'%> form-row">
@@ -69,13 +70,13 @@
     <span class="current-value"><%$Article->Id%></span>
   </div>
   <div class="col-md-4 value text-left">
-    <span class="current-value"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></span>
+    <span class="current-value article-name"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Display.html?id=<%$Article->Id%>"><%$Article->Name || loc('(no name)')%></a></span>
   </div>
   <div class="col-md-4 value text-left">
     <span class="current-value"><%$Article->CreatorObj->Name%></span>
   </div>
   <div class="col-md-3 value text-left">
-    <span class="current-value">[<a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a>]</span>
+    <span class="current-value article-update"><a href="<% RT->Config->Get('WebPath') %>/Articles/Article/Edit.html?id=<%$Article->Id%>"><&|/l&>Update</&></a></span>
   </div>
 </div>
 
@@ -85,6 +86,7 @@
   </div>
 </div>
 % }
+</div>
 
 <& /Widgets/TitleBoxEnd &>
 <%INIT>

@@ -1,3 +1,8 @@
 #articles-needs-setup a {
     text-decoration: underline;
 }
+
+#article-list span.article-name,
+#article-list span.article-update {
+    font-weight: bold;
+}
