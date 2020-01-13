@@ -308,7 +308,6 @@ sub BuildMainNav {
         }
     }
 
-
     if ( $request_path =~ m{^/Ticket/} ) {
         if ( ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
             my $id  = $1;
@@ -449,6 +448,24 @@ sub BuildMainNav {
                                 title => loc('Last') . ' >>', class => "nav", path => "/Ticket/Display.html?id=" . $item_map->{last});
                         }
                     }
+                }
+            }
+        }
+    }
+
+    # display "Back to <object>" link in transactions
+    if ( $request_path =~ m{^/Transaction/Display.html} ) {
+        if ( ( $HTML::Mason::Commands::DECODED_ARGS->{'id'} || '' ) =~ /^(\d+)$/ ) {
+            my $txn_id = $1;
+            my $txn = RT::Transaction->new( $current_user );
+            $txn->Load( $txn_id );
+            if ( $txn and $txn->Id ) {
+                my $object = $txn->Object;
+                if ( $object ) {
+                    my( $object_type ) = $object->RecordType;
+                    # This assumes that the object type can be used to describe the object (in "Back to $object_type")
+                    # and that displaying the object is done in /$object_type/Display.html?id=<id>
+                    $page->child( object_type => title => loc( "Back to [_1]", loc( $object_type ) ), path => "/$object_type/Display.html?id=" . $object->Id );
                 }
             }
         }
