@@ -11,5 +11,9 @@ CREATE TABLE Configurations (
     LastUpdated     DATE
 );
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (LOWER(Name));
-CREATE INDEX Configurations2 ON Configurations (Disabled);
+CREATE INDEX Configurations1 ON Configurations (LOWER(Name), Disabled);
+
+-- Add transaction support for new config in database feature
+ALTER TABLE Transactions MODIFY Field VARCHAR2(255);
+
+

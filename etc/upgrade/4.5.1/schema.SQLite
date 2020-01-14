@@ -10,6 +10,8 @@ CREATE TABLE Configurations (
     LastUpdated       timestamp                DEFAULT NULL
 );
 
-CREATE UNIQUE INDEX Configurations1 ON Configurations (Name);
-CREATE INDEX Configurations2 ON Configurations (Disabled);
+CREATE INDEX Configurations1 ON Configurations (Name, Disabled);
+
+-- Add transaction support for new config in database feature
+ALTER TABLE Transactions MODIFY Field VARCHAR(255) collate NOCASE NULL;
 
