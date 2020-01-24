@@ -463,9 +463,12 @@ sub BuildMainNav {
                 my $object = $txn->Object;
                 if ( $object ) {
                     my( $object_type ) = $object->RecordType;
+                    # the button_text is here to make translation support easier: "Return to $object_type" does not have a
+                    # single translation in many languages
+                    my %button_text = ( Ticket => loc( "Return to ticket" ) );
                     # This assumes that the object type can be used to describe the object (in "Back to $object_type")
                     # and that displaying the object is done in /$object_type/Display.html?id=<id>
-                    $page->child( object_type => title => loc( "Back to [_1]", loc( $object_type ) ), path => "/$object_type/Display.html?id=" . $object->Id );
+                    $page->child( object_type => title => $button_text{$object_type}, path => "/$object_type/Display.html?id=" . $object->Id );
                 }
             }
         }
