@@ -52,7 +52,7 @@
 % }
     <span class="type">
       <a name="txn-<% $Transaction->id %>" \
-% if ( $DisplayPath ) {
+% if ( $DisplayPath && ! ( $DisplayPath eq 'History.html' && $can_display_transaction ) ) {
       href="<% $DisplayPath %>?id=<% $Object->id %>#txn-<% $Transaction->id %>" \
 % } elsif ( $HTML::Mason::Commands::r->path_info =~ m{^/SelfService/} ) {
       href="<% RT->Config->Get('WebPath') %>/SelfService/Transaction/Display.html?id=<% $Transaction->id %>" \
@@ -112,6 +112,10 @@ $EmailRecordPath => undef
 <%INIT>
 my $record_type = $Object->RecordType;
 my $type_class  = $Object->ClassifyTransaction( $Transaction );
+# this is the list of object types that support displaying individual transactions
+# only tickets for now
+my %can_display_transaction = map { $_ => 1 } qw( Ticket );
+my $can_display_transaction = $can_display_transaction{$record_type};
 
 $m->callback(
     CallbackName => 'MassageTypeClass',
