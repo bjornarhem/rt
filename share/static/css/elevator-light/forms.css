@@ -393,3 +393,36 @@ textarea.code {
 #EditConfig ul.plugins {
     margin: 0;
 }
+
+/* reminders */
+#UpdateReminders .form-row {
+    margin-top: 0;
+}
+
+#UpdateReminders .form-row .oddline .form-row, #UpdateReminders .form-row .evenline .form-row {
+    margin: 0;
+    padding: 0.5rem 0;
+}
+
+#UpdateReminders .form-row.reminder-headers {
+    padding: 0.5rem;
+    border-bottom: 1px solid #dee2e6;
+}
+
+#UpdateReminders [id^=reminder-] {
+    border-bottom: 1px solid #dee2e6;
+}
+
+#UpdateReminders i {
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
+}
+
+#UpdateReminders hr {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+#UpdateReminders .current-value {
+    background-color: unset;
+}
