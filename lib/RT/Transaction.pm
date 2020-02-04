@@ -135,8 +135,6 @@ sub Create {
         return ( 0, $self->loc( "Transaction->Create couldn't, as you didn't specify an object type and id"));
     }
 
-
-
     #lets create our transaction
     my %params = (
         Type      => $args{'Type'},
@@ -1377,6 +1375,44 @@ sub _CanonicalizeRoleName {
         my $self = shift;
         return "Attachment content modified";
     },
+    # **** you are here, need to add SetConfig/CreateConfig and helper here, need to change from set/create
+    SetConfig => sub  {
+        my $self = shift;
+        my $description = '<b>'.$self->Data.'</b><br>';
+        my $new_value = $self->NewValue;
+        my $old_value = $self->OldValue;
+
+        # pull in old value from reference if data structure
+        if ($old_value =~ m/^(perl|json).value$/) {
+            my $oldobj = RT::Configuration->new($self->CurrentUser);
+            $oldobj->Load($self->OldReference);
+            $old_value = $oldobj->Content;
+        }
+
+        # pull in new value from reference if data structure
+        if ($new_value =~ m/^(perl|json).value$/) {
+            my $newobj = RT::Configuration->new($self->CurrentUser);
+            $newobj->Load($self->NewReference);
+            $new_value = $newobj->Content;
+        }
+
+        $description .= $self->loc('[_1] changed from "[_2]" to "[_3]"', $self->Field, $old_value, $new_value);
+        return $description;
+    },
+    DeleteConfig => sub  {
+        my $self = shift;
+        my $description = '<b>'.$self->Data.'</b><br>';
+        my $old_value = $self->OldValue;
+        # pull in old value from reference if data structure
+        if ($old_value =~ m/^(perl|json).value$/) {
+            my $oldobj = RT::Configuration->new($self->CurrentUser);
+            $oldobj->Load($self->OldReference);
+            $old_value = $oldobj->Content;
+        }
+
+        $description .= $self->loc('[_1] changed from "[_2]" to "[_3]"', $self->Field, $old_value, $self->loc("Deleted"));
+        return $description;
+    }
 );
 
 
@@ -1628,7 +1664,15 @@ be passed to RT::CustomField->Create() via the 'LookupType' hash key.
 
 
 sub CustomFieldLookupType {
-    "RT::Queue-RT::Ticket-RT::Transaction";
+    my $self = shift;
+
+    # skip if it's a table/class with no custom fields
+    if (ref($self) && ($self->ObjectType =~ m/RT::(Configuration)/)) {
+        return "";
+    }
+    else {
+        return "RT::Queue-RT::Ticket-RT::Transaction";
+    }
 }
 
 
@@ -1996,7 +2040,7 @@ sub _CoreAccessible {
         Type =>
                 {read => 1, write => 1, sql_type => 12, length => 20,  is_blob => 0,  is_numeric => 0,  type => 'varchar(20)', default => ''},
         Field =>
-                {read => 1, write => 1, sql_type => 12, length => 40,  is_blob => 0,  is_numeric => 0,  type => 'varchar(40)', default => ''},
+                {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         OldValue =>
                 {read => 1, write => 1, sql_type => 12, length => 255,  is_blob => 0,  is_numeric => 0,  type => 'varchar(255)', default => ''},
         NewValue =>

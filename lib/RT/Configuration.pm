@@ -147,20 +147,31 @@ sub Create {
         $content = $self->loc('(no value)');
     }
 
+    my $old_content_type;
     if ( ref $old_value ) {
         $old_value = $self->_SerializeContent($old_value);
+        $old_content_type = 'perl';
     }
 
-    RT->Logger->info(
-        sprintf(
-            '%s changed %s from "%s" to "%s"',
-            $self->CurrentUser->Name,
-            $self->Name,
-            $old_value // '',
-            $content // ''
-        )
+    my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+        Type => 'SetConfig',
+        Field => $self->Name,
+        ObjectType => 'RT::Configuration',
+        ObjectId => $self->id,
+        NewValue => ( $args{content_type} ) ? sprintf('%s value', $args{content_type}) : $content,
+        OldValue => ( $old_content_type ) ? sprintf('%s value', $old_content_type) : $old_value,
+        Data => $self->CurrentUser->Name . " created " . $self->Name,
+        ReferenceType => ref($self),
+        NewReference => $self->id,
     );
-    return ( $id, $self->loc( '[_1] changed from "[_2]" to "[_3]"', $self->Name, $old_value // '', $content // '' ) );
+
+    if ( RT->Config->Get('DevelMode') or not ($old_content_type || $args{content_type}) ) {
+        RT->Logger->info($self->CurrentUser->Name . " changed " . $self->Name . " from " . $old_value . " to " . $content);
+        return ($id, $self->loc('[_1] changed from "[_2]" to "[_3]"', $self->Name, $old_value // '', $content // ''));
+    } else {
+        RT->Logger->info($self->CurrentUser->Name . " changed " . $self->Name);
+        return ($id, $self->loc("[_1] changed", $self->Name));
+    }
 }
 
 =head2 CurrentUserCanSee
@@ -239,10 +250,24 @@ processes.
 sub Delete {
     my $self = shift;
     return (0, $self->loc("Permission Denied")) unless $self->CurrentUserCanSee;
-    my ($ok, $msg) = $self->SUPER::Delete(@_);
+    my $old_value = ( ref $self->Content ) ? sprintf('%s value', $self->ContentType) : $self->Content;
+    my ( $ok, $msg ) = $self->SetDisabled( 1 );
     return ($ok, $msg) if !$ok;
     RT->Config->ApplyConfigChangeToAllServerProcesses;
     RT->Logger->info($self->CurrentUser->Name . " removed database setting for " . $self->Name);
+
+    my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+        Type => 'DeleteConfig',
+        Field => $self->Name,
+        ObjectType => 'RT::Configuration',
+        ObjectId => $self->Id,
+        NewValue => $self->loc("Deleted"),
+        ReferenceType => ref($self),
+        OldReference => $self->id,
+        OldValue => $old_value,
+        Data => $self->CurrentUser->Name . " deleted " . $self->Name
+    );
+
     return ($ok, $self->loc("Database setting removed."));
 }
 
@@ -297,30 +322,40 @@ sub SetContent {
         $content_type = 'perl';
     }
 
-    $RT::Handle->BeginTransaction;
+    ( $ok, $msg ) = $self->SetDisabled( 1 );
+    return ($ok, $msg) if !$ok;
 
-    ($ok, $msg) = $self->_Set( Field => 'Content', Value => $value );
-    if (!$ok) {
-        $RT::Handle->Rollback;
-        return ($ok, $self->loc("Unable to update [_1]: [_2]", $self->Name, $msg));
+    my ( $new_id, $new_msg ) = $self->SUPER::Create(
+        Name => $self->Name,
+        Content => $value,
+        ContentType => $content_type,
+        Disabled => 0,
+    );
+
+    unless ($new_id) {
+        return (0, $self->loc("Setting [_1] to [_2] failed: [_3]", $self->Name, $value, $new_msg));
     }
 
-    if ($self->ContentType ne $content_type) {
-        ($ok, $msg) = $self->_Set( Field => 'ContentType', Value => $content_type );
-        if (!$ok) {
-            $RT::Handle->Rollback;
-            return ($ok, $self->loc("Unable to update [_1]: [_2]", $self->Name, $msg));
-        }
-    }
-
-    $RT::Handle->Commit;
     RT->Config->ApplyConfigChangeToAllServerProcesses;
 
     unless (defined($value) && length($value)) {
         $value = $self->loc('(no value)');
     }
 
-    if (!ref($value) && !ref($old_value)) {
+    my ( $Trans, $Msg, $TransObj ) = $self->_NewTransaction(
+        Type => 'SetConfig',
+        Field => $self->Name,
+        ObjectType => 'RT::Configuration',
+        ObjectId => $new_id,
+        NewValue => ( $content_type ) ? sprintf('%s value', $content_type) : $value,
+        OldValue => ( $self->ContentType ) ? sprintf('%s value', $self->ContentType) : $self->Content,
+        Data => $self->CurrentUser->Name . " updated " . $self->Name,
+        ReferenceType => ref($self),
+        OldReference => $self->id,
+        NewReference => $new_id,
+    );
+
+    if ( RT->Config->Get('DevelMode') or not ($self->ContentType || $content_type) ) {
         RT->Logger->info($self->CurrentUser->Name . " changed " . $self->Name . " from " . $old_value . " to " . $value);
         return ($ok, $self->loc('[_1] changed from "[_2]" to "[_3]"', $self->Name, $old_value, $value));
     } else {

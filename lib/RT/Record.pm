@@ -1879,6 +1879,7 @@ sub CustomFieldLookupId {
     return $self->Id unless @classes;
 
     my $object = $self;
+    return $self->Id if (ref($object) eq 'RT::Configuration');
     # Save a ->Load call by not calling ->FooObj->Id, just ->Foo
     my $final = shift @classes;
     foreach my $class (reverse @classes) {
