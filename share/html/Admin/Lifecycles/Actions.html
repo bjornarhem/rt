@@ -160,7 +160,7 @@ if ($UpdateLifecycleActions) {
         };
     }
 
-    my $config = RT->Config->Get('Lifecycles')->{$LifecycleObj->Name};
+    my $config = RT::Lifecycle->Lifecycles->{$LifecycleObj->Name};
     $config->{'actions'} = \@new_actions;
 
     my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
@@ -170,6 +170,7 @@ if ($UpdateLifecycleActions) {
     );
     if ( $ok ) {
         push @results, "Lifecycle updated";
+        RT::System->LifecycleCacheNeedsUpdate(1);
     }
     else {
         push @results, "An error occured when attempting to update lifecycle, see RT log for more info.";

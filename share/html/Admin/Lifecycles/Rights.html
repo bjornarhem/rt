@@ -147,7 +147,8 @@ if ($UpdateLifecycleRights) {
     foreach my $right ( keys %new_rights ) {
         $new_rights->{"$new_rights{$right}->{To} -> $new_rights{$right}->{From}"} = $new_rights{$right}->{Name};
     }
-    my $config = RT->Config->Get('Lifecycles')->{$LifecycleObj->Name};
+
+    my $config = RT::Lifecycle->Lifecycles->{$LifecycleObj->Name};
     $config->{'rights'} = $new_rights;
 
     my ($ok, $msg) = RT::Lifecycle->UpdateLifecycle(
@@ -157,6 +158,7 @@ if ($UpdateLifecycleRights) {
     );
     if ( $ok ) {
         push @results, "Lifecycle updated";
+        RT::System->LifecycleCacheNeedsUpdate(1);
     }
     else {
         push @results, "An error occured when attempting to update lifecycle, see RT log for more info.";

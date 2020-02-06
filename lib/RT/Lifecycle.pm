@@ -170,6 +170,19 @@ sub Load {
     return $self;
 }
 
+sub Lifecycles {
+    my $self = shift;
+
+    my $setting = RT::Configuration->new( RT->SystemUser );
+    $setting->Load('Lifecycles');
+    if ( $setting->Id ) {
+        return $setting->_DeserializeContent( $setting->Content );
+    }
+    else {
+        return RT::Config->Get( "Lifecycles" );
+    }
+}
+
 =head2 List
 
 List available lifecycles. This list omits RT's default approvals
@@ -941,7 +954,7 @@ sub UpdateLifecycle {
     );
 
     if ( $args{'Configuration'} ) {
-        my $config = RT::Configuration->new( RT->SystemUser );
+        my $config = RT::Configuration->new( $args{'CurrentUser'} );
 
         if ( $config->Load( 'LifecycleConfiguration-'.$args{'LifecycleObj'}->Name ) ) {
             my ($ret, $msg) = $config->SetContent( $args{'Configuration'} );
